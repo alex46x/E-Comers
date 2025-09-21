@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduVerse - Your Gateway to Knowledge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-blue: #0A192F;
+            --dark-orange: #FF8C00;
+            --light-blue: #88C0D0;
+            --slate: #8892b0;
+            --light-slate: #a8b2d1;
+            --lightest-slate: #ccd6f6;
+            --white: #e6f1ff;
+            --bg-light: #f8f9fa;
+            --text-light: #212529;
+            --bg-dark: var(--dark-blue);
+            --text-dark: var(--lightest-slate);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .dark body {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-light);
+        }
+
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .nav-scrolled {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .dark .nav-scrolled {
+            background-color: rgba(10, 25, 47, 0.85) !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .light .nav-scrolled {
+             background-color: rgba(248, 249, 250, 0.85) !important;
+        }
+
+
+        .btn-primary {
+            background-color: var(--dark-orange);
+            color: var(--dark-blue);
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(255, 140, 0, 0.4);
+        }
+
+        .course-card {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .dark .course-card:hover {
+            box-shadow: 0 10px 20px rgba(255,140,0,0.1);
+        }
+        
+        .dark .course-card {
+             background-color: #0F2340;
+             border-color: #1D3A61;
+        }
+
+        .fade-in {
+            animation: fadeInAnimation 0.5s ease-in-out forwards;
+        }
+
+        @keyframes fadeInAnimation {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Cart Badge */
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            height: 20px;
+            width: 20px;
+            background-color: var(--dark-orange);
+            color: var(--dark-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header and Navbar -->
+    <header id="navbar" class="sticky-nav bg-bg-light dark:bg-bg-dark">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="nav-link text-2xl font-bold text-dark-orange" data-target="home">EduVerse</a>
+            
+            <div class="hidden lg:flex items-center space-x-6">
+                <a href="#" class="nav-link text-slate dark:text-light-slate hover:text-dark-orange dark:hover:text-dark-orange transition-colors" data-target="home">Home</a>
+                <a href="#" class="nav-link text-slate dark:text-light-slate hover:text-dark-orange dark:hover:text-dark-orange transition-colors" data-target="courses">Courses</a>
+                <a href="#" class="nav-link text-slate dark:text-light-slate hover:text-dark-orange dark:hover:text-dark-orange transition-colors" data-target="about">About</a>
+                <a href="#" class="nav-link text-slate dark:text-light-slate hover:text-dark-orange dark:hover:text-dark-orange transition-colors" data-target="contact">Contact</a>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <a href="#" class="nav-link hidden sm:block text-slate dark:text-light-slate hover:text-dark-orange dark:hover:text-dark-orange transition-colors" data-target="login">Login</a>
+                <a href="#" class="nav-link btn-primary px-4 py-2 rounded-md hidden sm:block" data-target="register">Register</a>
+                
+                <!-- Theme Toggle -->
+                <button id="theme-toggle" class="p-2 rounded-full text-slate dark:text-light-slate hover:text-dark-orange dark:hover:text-dark-orange focus:outline-none">
+                    <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    <svg id="theme-icon-dark" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                </button>
+                
+                <!-- Cart Icon -->
+                <a href="#" class="nav-link relative p-2 text-slate dark:text-light-slate hover:text-dark-orange dark:hover:text-dark-orange" data-target="cart">
+                    <i data-lucide="shopping-cart" class="w-6 h-6"></i>
+                    <span id="cart-badge" class="cart-badge hidden">0</span>
+                </a>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-button" class="lg:hidden p-2 rounded-md text-slate dark:text-light-slate focus:outline-none">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </nav>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden lg:hidden px-6 pb-4 space-y-2">
+            <a href="#" class="block nav-link text-slate dark:text-light-slate hover:text-dark-orange dark:hover:text-dark-orange transition-colors" data-target="home">Home</a>
+            <a href="#" class="block nav-link text-slate dark:text-light-slate hover:text-dark-orange dark:hover:text-dark-orange transition-colors" data-target="courses">Courses</a>
+            <a href="#" class="block nav-link text-slate dark:text-light-slate hover:text-dark-orange dark:hover:text-dark-orange transition-colors" data-target="about">About</a>
+            <a href="#" class="block nav-link text-slate dark:text-light-slate hover:text-dark-orange dark:hover:text-dark-orange transition-colors" data-target="contact">Contact</a>
+            <hr class="border-slate/20 dark:border-light-slate/20">
+            <a href="#" class="block nav-link text-slate dark:text-light-slate hover:text-dark-orange dark:hover:text-dark-orange transition-colors" data-target="login">Login</a>
+            <a href="#" class="block nav-link btn-primary px-4 py-2 rounded-md text-center" data-target="register">Register</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 md:py-12">
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <div class="text-center min-h-[70vh] flex flex-col justify-center items-center">
+                <h1 class="text-4xl md:text-6xl font-extrabold mb-4 text-dark-blue dark:text-white">
+                    Unlock Your Potential.
+                </h1>
+                <p class="text-lg md:text-xl mb-8 text-slate dark:text-light-slate max-w-2xl">
+                    Discover thousands of online courses from expert instructors on web development, digital marketing, and more. Start your learning journey today.
+                </p>
+                <a href="#" class="nav-link btn-primary text-lg px-8 py-4 rounded-lg" data-target="courses">
+                    Browse Courses
+                </a>
+            </div>
+            
+             <!-- Featured Courses -->
+            <div class="mt-16">
+                <h2 class="text-3xl font-bold text-center mb-8 text-dark-blue dark:text-white">Featured Courses</h2>
+                <div id="featured-courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Featured courses will be injected here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Courses Section -->
+        <section id="courses" class="section">
+             <div class="text-center mb-12">
+                <h1 class="text-4xl font-extrabold mb-2 text-dark-blue dark:text-white">Our Courses</h1>
+                <p class="text-lg text-slate dark:text-light-slate">Find the perfect course to boost your skills.</p>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="flex flex-wrap justify-center gap-2 mb-8">
+                <button class="filter-btn bg-dark-orange/10 dark:bg-dark-orange/20 text-dark-orange font-semibold px-4 py-2 rounded-full" data-category="all">All</button>
+                <button class="filter-btn bg-gray-200 dark:bg-slate/40 text-slate dark:text-light-slate font-semibold px-4 py-2 rounded-full" data-category="Web Development">Web Development</button>
+                <button class="filter-btn bg-gray-200 dark:bg-slate/40 text-slate dark:text-light-slate font-semibold px-4 py-2 rounded-full" data-category="Digital Marketing">Digital Marketing</button>
+                <button class="filter-btn bg-gray-200 dark:bg-slate/40 text-slate dark:text-light-slate font-semibold px-4 py-2 rounded-full" data-category="Computer Basics">Computer Basics</button>
+                 <button class="filter-btn bg-gray-200 dark:bg-slate/40 text-slate dark:text-light-slate font-semibold px-4 py-2 rounded-full" data-category="Data Science">Data Science</button>
+            </div>
+
+            <div id="courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <!-- Course cards will be injected here by JS -->
+            </div>
+        </section>
+
+        <!-- Course Detail Section -->
+        <section id="course-detail" class="section">
+             <!-- Dynamic content will be injected here -->
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="section">
+            <div class="max-w-4xl mx-auto text-center">
+                 <h1 class="text-4xl font-extrabold mb-4 text-dark-blue dark:text-white">About EduVerse</h1>
+                <p class="text-lg text-slate dark:text-light-slate mb-8">
+                    EduVerse was founded with a simple mission: to make high-quality education accessible to everyone, everywhere. We believe learning is a lifelong journey, and we're here to guide you every step of the way with courses taught by industry experts.
+                </p>
+                <img src="https://placehold.co/800x400/0A192F/FF8C00?text=Our+Team" alt="Our Team" class="rounded-lg shadow-lg mx-auto">
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="section">
+             <div class="max-w-2xl mx-auto">
+                 <h1 class="text-4xl font-extrabold text-center mb-8 text-dark-blue dark:text-white">Get in Touch</h1>
+                <form class="space-y-6 bg-white dark:bg-dark-blue p-8 rounded-lg shadow-md border border-gray-200 dark:border-slate/50">
+                    <div>
+                        <label for="name" class="block mb-2 text-sm font-medium text-slate dark:text-light-slate">Your Name</label>
+                        <input type="text" id="name" class="w-full p-3 bg-gray-100 dark:bg-slate/40 rounded-md border border-gray-300 dark:border-slate/50 focus:ring-2 focus:ring-dark-orange focus:border-dark-orange outline-none transition" placeholder="John Doe">
+                    </div>
+                    <div>
+                        <label for="email" class="block mb-2 text-sm font-medium text-slate dark:text-light-slate">Your Email</label>
+                        <input type="email" id="email" class="w-full p-3 bg-gray-100 dark:bg-slate/40 rounded-md border border-gray-300 dark:border-slate/50 focus:ring-2 focus:ring-dark-orange focus:border-dark-orange outline-none transition" placeholder="you@example.com">
+                    </div>
+                    <div>
+                        <label for="message" class="block mb-2 text-sm font-medium text-slate dark:text-light-slate">Message</label>
+                        <textarea id="message" rows="4" class="w-full p-3 bg-gray-100 dark:bg-slate/40 rounded-md border border-gray-300 dark:border-slate/50 focus:ring-2 focus:ring-dark-orange focus:border-dark-orange outline-none transition" placeholder="Your message..."></textarea>
+                    </div>
+                    <button type="submit" class="w-full btn-primary py-3 rounded-lg">Send Message</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Login/Register Sections -->
+        <section id="login" class="section">
+            <div class="max-w-md mx-auto">
+                <h1 class="text-4xl font-extrabold text-center mb-8 text-dark-blue dark:text-white">Login</h1>
+                 <form class="space-y-6 bg-white dark:bg-dark-blue p-8 rounded-lg shadow-md border border-gray-200 dark:border-slate/50">
+                    <div>
+                        <label for="login-email" class="block mb-2 text-sm font-medium text-slate dark:text-light-slate">Email</label>
+                        <input type="email" id="login-email" class="w-full p-3 bg-gray-100 dark:bg-slate/40 rounded-md border border-gray-300 dark:border-slate/50 focus:ring-2 focus:ring-dark-orange focus:border-dark-orange outline-none transition" placeholder="you@example.com">
+                    </div>
+                    <div>
+                        <label for="login-password" class="block mb-2 text-sm font-medium text-slate dark:text-light-slate">Password</label>
+                        <input type="password" id="login-password" class="w-full p-3 bg-gray-100 dark:bg-slate/40 rounded-md border border-gray-300 dark:border-slate/50 focus:ring-2 focus:ring-dark-orange focus:border-dark-orange outline-none transition" placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="w-full btn-primary py-3 rounded-lg">Sign In</button>
+                     <p class="text-sm text-center text-slate dark:text-light-slate">
+                        Don't have an account? <a href="#" class="nav-link font-medium text-dark-orange hover:underline" data-target="register">Register here</a>
+                    </p>
+                </form>
+            </div>
+        </section>
+
+        <section id="register" class="section">
+             <div class="max-w-md mx-auto">
+                <h1 class="text-4xl font-extrabold text-center mb-8 text-dark-blue dark:text-white">Create an Account</h1>
+                 <form class="space-y-6 bg-white dark:bg-dark-blue p-8 rounded-lg shadow-md border border-gray-200 dark:border-slate/50">
+                    <div>
+                        <label for="reg-name" class="block mb-2 text-sm font-medium text-slate dark:text-light-slate">Full Name</label>
+                        <input type="text" id="reg-name" class="w-full p-3 bg-gray-100 dark:bg-slate/40 rounded-md border border-gray-300 dark:border-slate/50 focus:ring-2 focus:ring-dark-orange focus:border-dark-orange outline-none transition" placeholder="John Doe">
+                    </div>
+                    <div>
+                        <label for="reg-email" class="block mb-2 text-sm font-medium text-slate dark:text-light-slate">Email</label>
+                        <input type="email" id="reg-email" class="w-full p-3 bg-gray-100 dark:bg-slate/40 rounded-md border border-gray-300 dark:border-slate/50 focus:ring-2 focus:ring-dark-orange focus:border-dark-orange outline-none transition" placeholder="you@example.com">
+                    </div>
+                    <div>
+                        <label for="reg-password" class="block mb-2 text-sm font-medium text-slate dark:text-light-slate">Password</label>
+                        <input type="password" id="reg-password" class="w-full p-3 bg-gray-100 dark:bg-slate/40 rounded-md border border-gray-300 dark:border-slate/50 focus:ring-2 focus:ring-dark-orange focus:border-dark-orange outline-none transition" placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="w-full btn-primary py-3 rounded-lg">Register</button>
+                     <p class="text-sm text-center text-slate dark:text-light-slate">
+                        Already have an account? <a href="#" class="nav-link font-medium text-dark-orange hover:underline" data-target="login">Login here</a>
+                    </p>
+                </form>
+            </div>
+        </section>
+
+        <!-- Cart Section -->
+        <section id="cart" class="section">
+             <h1 class="text-4xl font-extrabold text-center mb-8 text-dark-blue dark:text-white">Your Shopping Cart</h1>
+             <div id="cart-items-container" class="max-w-4xl mx-auto">
+                <!-- Cart items will be injected here -->
+             </div>
+             <div id="cart-summary" class="max-w-4xl mx-auto mt-8 hidden">
+                 <div class="bg-white dark:bg-dark-blue p-6 rounded-lg shadow-md border border-gray-200 dark:border-slate/50 flex justify-between items-center">
+                    <h3 class="text-xl font-bold">Total: <span id="cart-total" class="text-dark-orange">$0.00</span></h3>
+                    <button class="nav-link btn-primary px-6 py-3 rounded-lg" data-target="checkout">Proceed to Checkout</button>
+                 </div>
+             </div>
+             <div id="cart-empty" class="text-center">
+                 <p class="text-xl text-slate dark:text-light-slate">Your cart is empty.</p>
+                 <a href="#" class="nav-link btn-primary text-md px-6 py-3 rounded-lg mt-4 inline-block" data-target="courses">
+                    Start Learning
+                </a>
+             </div>
+        </section>
+
+        <!-- Checkout Section -->
+        <section id="checkout" class="section">
+            <h1 class="text-4xl font-extrabold text-center mb-8 text-dark-blue dark:text-white">Checkout</h1>
+            <div class="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Order Summary -->
+                <div class="bg-white dark:bg-dark-blue p-6 rounded-lg shadow-md border border-gray-200 dark:border-slate/50">
+                    <h2 class="text-2xl font-bold mb-4 border-b pb-3 dark:border-slate/50">Order Summary</h2>
+                    <div id="checkout-summary-items" class="space-y-4">
+                        <!-- Summary items injected here -->
+                    </div>
+                    <div class="mt-6 border-t pt-4 dark:border-slate/50">
+                        <div class="flex justify-between font-bold text-lg">
+                            <span>Total</span>
+                            <span id="checkout-total" class="text-dark-orange">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Details -->
+                <div class="bg-white dark:bg-dark-blue p-6 rounded-lg shadow-md border border-gray-200 dark:border-slate/50">
+                    <h2 class="text-2xl font-bold mb-4">Payment Information</h2>
+                    <form class="space-y-4">
+                         <div>
+                            <label for="card-name" class="block mb-2 text-sm font-medium text-slate dark:text-light-slate">Name on Card</label>
+                            <input type="text" id="card-name" class="w-full p-3 bg-gray-100 dark:bg-slate/40 rounded-md border border-gray-300 dark:border-slate/50 focus:ring-2 focus:ring-dark-orange focus:border-dark-orange outline-none transition" placeholder="John M. Doe">
+                        </div>
+                         <div>
+                            <label for="card-number" class="block mb-2 text-sm font-medium text-slate dark:text-light-slate">Card Number</label>
+                            <input type="text" id="card-number" class="w-full p-3 bg-gray-100 dark:bg-slate/40 rounded-md border border-gray-300 dark:border-slate/50 focus:ring-2 focus:ring-dark-orange focus:border-dark-orange outline-none transition" placeholder="1234 5678 9012 3456">
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="w-1/2">
+                                <label for="card-expiry" class="block mb-2 text-sm font-medium text-slate dark:text-light-slate">Expiry Date</label>
+                                <input type="text" id="card-expiry" class="w-full p-3 bg-gray-100 dark:bg-slate/40 rounded-md border border-gray-300 dark:border-slate/50 focus:ring-2 focus:ring-dark-orange focus:border-dark-orange outline-none transition" placeholder="MM/YY">
+                            </div>
+                            <div class="w-1/2">
+                                <label for="card-cvc" class="block mb-2 text-sm font-medium text-slate dark:text-light-slate">CVC</label>
+                                <input type="text" id="card-cvc" class="w-full p-3 bg-gray-100 dark:bg-slate/40 rounded-md border border-gray-300 dark:border-slate/50 focus:ring-2 focus:ring-dark-orange focus:border-dark-orange outline-none transition" placeholder="123">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full btn-primary py-3 rounded-lg mt-4">Pay Now</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark-blue text-white mt-16">
+        <div class="container mx-auto px-6 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold text-dark-orange mb-4">EduVerse</h3>
+                    <p class="text-light-slate">Empowering minds through accessible online education.</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="nav-link text-light-slate hover:text-dark-orange" data-target="home">Home</a></li>
+                        <li><a href="#" class="nav-link text-light-slate hover:text-dark-orange" data-target="courses">Courses</a></li>
+                        <li><a href="#" class="nav-link text-light-slate hover:text-dark-orange" data-target="about">About Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg mb-4">Support</h3>
+                     <ul class="space-y-2">
+                        <li><a href="#" class="nav-link text-light-slate hover:text-dark-orange" data-target="contact">Contact</a></li>
+                        <li><a href="#" class="text-light-slate hover:text-dark-orange">FAQ</a></li>
+                        <li><a href="#" class="text-light-slate hover:text-dark-orange">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div>
+                     <h3 class="font-semibold text-lg mb-4">Follow Us</h3>
+                     <div class="flex space-x-4">
+                        <a href="#" class="text-light-slate hover:text-dark-orange"><i data-lucide="facebook"></i></a>
+                        <a href="#" class="text-light-slate hover:text-dark-orange"><i data-lucide="twitter"></i></a>
+                        <a href="#" class="text-light-slate hover:text-dark-orange"><i data-lucide="instagram"></i></a>
+                        <a href="#" class="text-light-slate hover:text-dark-orange"><i data-lucide="linkedin"></i></a>
+                     </div>
+                </div>
+            </div>
+            <div class="mt-8 pt-6 border-t border-slate text-center text-sm text-light-slate">
+                &copy; 2025 EduVerse. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Course Data ---
+            const coursesData = [
+                { id: 1, title: 'The Complete Web Developer Course 3.0', category: 'Web Development', price: 99.99, image: 'https://placehold.co/600x400/0A192F/FF8C00?text=Web+Dev', description: 'Learn to build websites and web apps. HTML, CSS, Javascript, React, Node.js, and more!', featured: true, instructor: 'Dr. Angela Yu' },
+                { id: 2, title: 'Digital Marketing Masterclass', category: 'Digital Marketing', price: 79.99, image: 'https://placehold.co/600x400/88C0D0/0A192F?text=Marketing', description: 'Master SEO, social media marketing, email marketing, and analytics to grow any business.', featured: true, instructor: 'Seth Godin' },
+                { id: 3, title: 'Introduction to Computer Science', category: 'Computer Basics', price: 49.99, image: 'https://placehold.co/600x400/FF8C00/0A192F?text=CS101', description: 'A beginner-friendly introduction to the fundamental concepts of computer science.', featured: false, instructor: 'David Malan' },
+                { id: 4, title: 'Advanced CSS and Sass', category: 'Web Development', price: 59.99, image: 'https://placehold.co/600x400/0A192F/88C0D0?text=CSS', description: 'Take your CSS skills to the next level with advanced techniques, animations, and Sass.', featured: false, instructor: 'Jonas Schmedtmann' },
+                { id: 5, title: 'Python for Data Science and Machine Learning', category: 'Data Science', price: 129.99, image: 'https://placehold.co/600x400/88C0D0/e6f1ff?text=Python', description: 'Learn Python for data analysis, visualization, machine learning, and AI with libraries like Pandas, NumPy, and Scikit-learn.', featured: true, instructor: 'Jose Portilla' },
+                { id: 6, title: 'The Complete Guide to Content Marketing', category: 'Digital Marketing', price: 69.99, image: 'https://placehold.co/600x400/FF8C00/e6f1ff?text=Content', description: 'Learn how to create and distribute valuable content to attract and retain customers.', featured: false, instructor: 'Neil Patel' },
+                { id: 7, title: 'JavaScript Algorithms and Data Structures', category: 'Web Development', price: 109.99, image: 'https://placehold.co/600x400/0A192F/e6f1ff?text=JS+Algo', description: 'Master fundamental algorithms and data structures to become a better problem solver and developer.', featured: false, instructor: 'Colt Steele' },
+                { id: 8, title: 'Operating Systems 101', category: 'Computer Basics', price: 39.99, image: 'https://placehold.co/600x400/88C0D0/0A192F?text=OS', description: 'Understand how operating systems work, from process management to memory allocation.', featured: false, instructor: 'Jane Doe' },
+            ];
+
+            // --- State Management ---
+            let cartItems = [];
+
+            // --- Element Selectors ---
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const coursesGrid = document.getElementById('courses-grid');
+            const featuredCoursesGrid = document.getElementById('featured-courses-grid');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            // --- Navigation ---
+            function showSection(targetId) {
+                sections.forEach(section => {
+                    if (section.id === targetId) {
+                        section.classList.add('active', 'fade-in');
+                    } else {
+                        section.classList.remove('active', 'fade-in');
+                    }
+                });
+                window.scrollTo(0, 0);
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = e.currentTarget.dataset.target;
+                    if(targetId) {
+                        showSection(targetId);
+                        // Close mobile menu on navigation
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+
+            // --- Course Rendering ---
+            function createCourseCard(course) {
+                return `
+                    <div class="course-card bg-white dark:bg-dark-blue rounded-lg shadow-md border border-gray-200 dark:border-slate/50 cursor-pointer" data-course-id="${course.id}">
+                        <img src="${course.image}" alt="${course.title}" class="rounded-t-lg w-full h-48 object-cover">
+                        <div class="p-6">
+                            <span class="text-sm font-semibold text-dark-orange mb-2 inline-block">${course.category}</span>
+                            <h3 class="text-xl font-bold mb-2 text-dark-blue dark:text-white h-14">${course.title}</h3>
+                            <p class="text-slate dark:text-light-slate mb-4 h-20 overflow-hidden">${course.description.substring(0, 100)}...</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-extrabold text-light-blue">$${course.price}</span>
+                                <button class="btn-primary px-4 py-2 rounded-md add-to-cart-btn" data-course-id="${course.id}">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderCourses(filter = 'all') {
+                const filteredCourses = filter === 'all'
+                    ? coursesData
+                    : coursesData.filter(course => course.category === filter);
+                
+                coursesGrid.innerHTML = filteredCourses.map(createCourseCard).join('');
+                addCardEventListeners();
+            }
+            
+            function renderFeaturedCourses() {
+                const featuredCourses = coursesData.filter(course => course.featured);
+                featuredCoursesGrid.innerHTML = featuredCourses.map(createCourseCard).join('');
+                addCardEventListeners();
+            }
+
+            function addCardEventListeners() {
+                document.querySelectorAll('.course-card').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        if (!e.target.classList.contains('add-to-cart-btn')) {
+                            const courseId = e.currentTarget.dataset.courseId;
+                            showCourseDetail(courseId);
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+                   button.addEventListener('click', (e) => {
+                       e.stopPropagation();
+                       const courseId = e.currentTarget.dataset.courseId;
+                       addToCart(parseInt(courseId));
+                   })
+                });
+            }
+
+            // --- Course Detail Page ---
+            function showCourseDetail(courseId) {
+                const course = coursesData.find(c => c.id == courseId);
+                const detailSection = document.getElementById('course-detail');
+                
+                detailSection.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+                        <div>
+                            <img src="${course.image}" alt="${course.title}" class="rounded-lg shadow-xl w-full">
+                        </div>
+                        <div>
+                            <button class="nav-link text-sm text-slate dark:text-light-slate mb-4 inline-flex items-center" data-target="courses">
+                                <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i> Back to Courses
+                            </button>
+                            <span class="text-md font-semibold text-dark-orange mb-2 inline-block">${course.category}</span>
+                            <h1 class="text-4xl font-extrabold mb-4 text-dark-blue dark:text-white">${course.title}</h1>
+                             <p class="text-lg text-slate dark:text-light-slate mb-4">By <span class="font-semibold text-light-blue">${course.instructor}</span></p>
+                            <p class="text-slate dark:text-light-slate mb-6 text-lg">${course.description}</p>
+                            <div class="flex items-center space-x-6">
+                                <span class="text-4xl font-extrabold text-light-blue">$${course.price}</span>
+                                <button class="btn-primary text-lg px-8 py-4 rounded-lg add-to-cart-btn" data-course-id="${course.id}">Enroll Now</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                lucide.createIcons(); // Re-initialize icons
+                // We need to re-add event listeners for the newly created elements
+                detailSection.querySelector('.add-to-cart-btn').addEventListener('click', (e) => {
+                    addToCart(course.id);
+                });
+                detailSection.querySelector('.nav-link').addEventListener('click', (e) => {
+                     e.preventDefault();
+                     showSection('courses');
+                });
+                showSection('course-detail');
+            }
+
+
+            // --- Filtering ---
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const category = e.currentTarget.dataset.category;
+                    renderCourses(category);
+                    
+                    filterBtns.forEach(b => {
+                        b.classList.remove('bg-dark-orange/10', 'dark:bg-dark-orange/20', 'text-dark-orange');
+                        b.classList.add('bg-gray-200', 'dark:bg-slate/40', 'text-slate', 'dark:text-light-slate');
+                    });
+                    e.currentTarget.classList.add('bg-dark-orange/10', 'dark:bg-dark-orange/20', 'text-dark-orange');
+                    e.currentTarget.classList.remove('bg-gray-200', 'dark:bg-slate/40', 'text-slate', 'dark:text-light-slate');
+                });
+            });
+
+            // --- Cart Logic ---
+            const cartBadge = document.getElementById('cart-badge');
+
+            function addToCart(courseId) {
+                const course = coursesData.find(c => c.id === courseId);
+                const existingItem = cartItems.find(item => item.id === courseId);
+
+                if (!existingItem) {
+                    cartItems.push({ ...course, quantity: 1 });
+                }
+                updateCart();
+            }
+
+            function removeFromCart(courseId) {
+                cartItems = cartItems.filter(item => item.id !== courseId);
+                updateCart();
+            }
+
+            function updateCart() {
+                renderCartItems();
+                updateCartBadge();
+                updateCartSummary();
+            }
+
+            function updateCartBadge() {
+                const totalItems = cartItems.length;
+                if (totalItems > 0) {
+                    cartBadge.textContent = totalItems;
+                    cartBadge.classList.remove('hidden');
+                } else {
+                    cartBadge.classList.add('hidden');
+                }
+            }
+
+            function renderCartItems() {
+                const container = document.getElementById('cart-items-container');
+                if (cartItems.length === 0) {
+                    container.innerHTML = '';
+                    document.getElementById('cart-empty').style.display = 'block';
+                    document.getElementById('cart-summary').style.display = 'none';
+                } else {
+                     document.getElementById('cart-empty').style.display = 'none';
+                     document.getElementById('cart-summary').style.display = 'block';
+                    container.innerHTML = cartItems.map(item => `
+                        <div class="flex items-center justify-between bg-white dark:bg-dark-blue p-4 rounded-lg shadow-md mb-4 border border-gray-200 dark:border-slate/50">
+                            <div class="flex items-center gap-4">
+                                <img src="${item.image}" alt="${item.title}" class="w-24 h-16 object-cover rounded-md">
+                                <div>
+                                    <h4 class="font-bold text-lg text-dark-blue dark:text-white">${item.title}</h4>
+                                    <p class="text-sm text-slate dark:text-light-slate">${item.category}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-6">
+                                <span class="font-bold text-lg text-light-blue">$${item.price}</span>
+                                <button class="remove-from-cart text-red-500 hover:text-red-700" data-course-id="${item.id}">
+                                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+                     lucide.createIcons();
+                     document.querySelectorAll('.remove-from-cart').forEach(button => {
+                         button.addEventListener('click', e => {
+                            const courseId = parseInt(e.currentTarget.dataset.courseId);
+                            removeFromCart(courseId);
+                         });
+                     });
+                }
+            }
+            
+            function updateCartSummary() {
+                const total = cartItems.reduce((sum, item) => sum + item.price, 0);
+                document.getElementById('cart-total').textContent = `$${total.toFixed(2)}`;
+                
+                // Update checkout summary as well
+                const checkoutItemsContainer = document.getElementById('checkout-summary-items');
+                checkoutItemsContainer.innerHTML = cartItems.map(item => `
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-slate dark:text-light-slate">${item.title}</span>
+                        <span class="font-semibold">$${item.price.toFixed(2)}</span>
+                    </div>
+                `).join('');
+                document.getElementById('checkout-total').textContent = `$${total.toFixed(2)}`;
+            }
+
+            // --- Theme Toggler ---
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIconLight = document.getElementById('theme-icon-light');
+            const themeIconDark = document.getElementById('theme-icon-dark');
+            const htmlEl = document.documentElement;
+
+            // Set initial theme based on localStorage or system preference
+            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                htmlEl.classList.add('dark');
+                themeIconLight.classList.remove('hidden');
+            } else {
+                htmlEl.classList.remove('dark');
+                themeIconDark.classList.remove('hidden');
+            }
+
+            themeToggle.addEventListener('click', () => {
+                htmlEl.classList.toggle('dark');
+                if (htmlEl.classList.contains('dark')) {
+                    localStorage.setItem('theme', 'dark');
+                    themeIconLight.classList.remove('hidden');
+                    themeIconDark.classList.add('hidden');
+                } else {
+                    localStorage.setItem('theme', 'light');
+                    themeIconDark.classList.remove('hidden');
+                    themeIconLight.classList.add('hidden');
+                }
+            });
+
+            // --- Mobile Menu ---
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // --- Navbar Scroll Effect ---
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 20) {
+                    navbar.classList.add('nav-scrolled');
+                } else {
+                    navbar.classList.remove('nav-scrolled');
+                }
+            });
+
+
+            // --- Initial Load ---
+            lucide.createIcons();
+            renderCourses();
+            renderFeaturedCourses();
+            updateCart();
+            showSection('home');
+        });
+    </script>
+
+</body>
+</html>
